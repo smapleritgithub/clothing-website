@@ -1,0 +1,17 @@
+<!-- templates/place_order.html -->
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Place Order: {{ product.name }}</h2>
+  <form method="post" action="{% url 'place_order' %}">
+    {% csrf_token %}
+    <label>Quantity:</label>
+    <input type="number" name="quantity" value="1" min="1" required><br>
+    <label>Phone:</label>
+    <input type="text" name="phone" required><br>
+    <label>Address:</label>
+    <textarea name="address" required></textarea><br>
+    <button type="submit" class="btn btn-success">Place Order</button>
+  </form>
+</div>
+{% endblock %}

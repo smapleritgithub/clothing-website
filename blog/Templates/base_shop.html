@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+{% block content %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+<style>
+  body {
+    background: linear-gradient(to right, #fdfbfb, #ebedee);
+    font-family: 'Poppins', sans-serif;
+  }
+
+  .section-heading {
+    font-weight: 700;
+    font-size: 2.5rem;
+    color: #333;
+  }
+
+  .card {
+    border-radius: 16px;
+    background-color: #fff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    transition: 0.4s ease-in-out;
+    overflow: hidden;
+    border: none;
+  }
+
+  .card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .card-img-top {
+    height: 230px;
+    object-fit: cover;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .card:hover .card-img-top {
+    transform: scale(1.05);
+  }
+
+  .card-title {
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: #222;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-text {
+    font-size: 0.95rem;
+    color: #555;
+  }
+
+  .price-text {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2ecc71;
+  }
+
+  .btn-gradient {
+    background: linear-gradient(to right, #4a00e0, #8e2de2);
+    color: #fff;
+    border: none;
+    font-weight: 500;
+    transition: 0.3s ease-in-out;
+    border-radius: 50px;
+  }
+
+  .btn-gradient:hover {
+    background: linear-gradient(to right, #8e2de2, #4a00e0);
+    transform: scale(1.05);
+  }
+
+  .form-check-label {
+    font-weight: 500;
+    color: #444;
+  }
+
+  .form-check-input {
+    margin-top: 0.4rem;
+    transform: scale(1.2);
+    accent-color: #8e2de2;
+  }
+
+  .pagination .page-item.active .page-link {
+    background-color: #8e2de2;
+    border-color: #8e2de2;
+  }
+
+  .pagination .page-link {
+    color: #8e2de2;
+  }
+
+  .no-products {
+    opacity: 0.75;
+    font-size: 1.1rem;
+  }
+
+  .search-bar {
+    margin-top: 40px;
+    margin-bottom: 30px;
+  }
+
+  .search-input {
+    border-radius: 50px 0 0 50px;
+    padding-left: 20px;
+    box-shadow: none;
+  }
+
+  .search-btn {
+    border-radius: 0 50px 50px 0;
+    font-weight: 500;
+  }
+</style>
+
+<div class="container mt-5">
+  <div class="text-center mb-4">
+    <h1 class="section-heading">
+      <i class="fas fa-tshirt me-2 text-primary"></i>Clothing Shopping System
+    </h1>
+  </div>
+
+  <!-- 🔍 Search Bar -->
+  <div class="row justify-content-center search-bar">
+    <div class="col-lg-8 col-md-10">
+      <form method="get" action="{% url 'search_products' %}" class="input-group shadow rounded-pill overflow-hidden">
+        <input 
+          type="text" 
+          name="query" 
+          class="form-control search-input border-0 px-4 py-2" 
+          placeholder="🔍 Search for stylish products..."
+          value="{{ request.GET.query|default:'' }}"
+          aria-label="Search products"
+        >
+        <button type="submit" class="btn btn-gradient px-4 py-2">
+          <i class="fas fa-search me-1"></i> Search
+        </button>
+      </form>
+    </div>
+  </div>
+  
+  <!-- 🧾 Product Grid -->
+  <div class="row">
+    {% for product in page_obj %}
+    <div class="col-md-4 col-sm-6 mb-4 d-flex align-items-stretch">
+      <div class="card w-100">
+        {% if product.image %}
+        <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.title }}">
+        {% endif %}
+
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title"><i class="fas fa-tag text-secondary me-1"></i>{{ product.title }}</h5>
+          <p class="card-text"><i class="fas fa-layer-group me-1 text-muted"></i> Category: {{ product.category }}</p>
+          <p class="price-text"><i class="fas fa-money-bill-wave me-1"></i>Rs. {{ product.price }}</p>
+          <p class="card-text">{{ product.getLimitText|safe }}</p>
+
+          <div class="d-grid gap-2 mt-auto">
+            <a href="{% url 'base_shop_detail' product.id %}" class="btn btn-outline-primary btn-sm rounded-pill">
+              <i class="fas fa-eye"></i> View Details
+            </a>
+            <form action="{% url 'add_to_cart' product.id %}" method="post" class="d-grid mt-2">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{{ request.path }}">
+              <button type="submit" class="btn btn-gradient btn-sm rounded-pill">
+                <i class="fas fa-cart-plus"></i> Add to Cart
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center mt-5">
+      <p class="text-muted no-products">
+        <i class="fas fa-box-open fa-2x text-secondary mb-2"></i><br>🚫 No products found.
+      </p>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- ✅ Pagination Controls -->
+  {% if page_obj.has_other_pages %}
+  <nav class="mt-4">
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}">&laquo; Prev</a>
+      </li>
+      {% endif %}
+
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+          <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+          <li class="page-item"><a class="page-link" href="?page={{ num }}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}">{{ num }}</a></li>
+        {% endif %}
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}">Next &raquo;</a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+</div>
+{% endblock %}

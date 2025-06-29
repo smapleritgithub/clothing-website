@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5">
+  <div class="row">
+    <!-- 🖼 Product Image -->
+    <div class="col-lg-6 mb-4">
+      {% if product.image %}
+        <img src="{{ product.image.url }}"
+             alt="{{ product.title }}"
+             class="img-fluid rounded shadow-sm w-100"
+             style="max-height: 400px; object-fit: cover;">
+      {% else %}
+        <div class="bg-secondary text-white text-center p-5 rounded">
+          <strong>No image available</strong>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- 📝 Product Info -->
+    <div class="col-lg-6 d-flex flex-column justify-content-between">
+      <div>
+        <h1 class="fw-bold mb-3">{{ product.title }}</h1>
+
+        <ul class="list-unstyled">
+          <li><strong>💰 Price:</strong> Rs. {{ product.price }}</li>
+          <li><strong>📅 Published On:</strong> {{ product.created_at|date:"F j, Y" }}</li>
+          <li><strong>📂 Category:</strong> {{ product.category.name }}</li>
+        </ul>
+
+        <p class="mt-4 text-muted">{{ product.description|linebreaks }}</p>
+      </div>
+
+      <!-- 🔗 Actions -->
+      <div class="mt-4 d-flex flex-wrap gap-2">
+        <a href="{% url 'base_shop' %}" class="btn btn-outline-primary" style="white">
+          ← Back to Shop
+        </a>
+
+        <form action="{% url 'add_to_cart' product.id %}" method="post">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <button type="submit" class="btn btn-success">
+            🛒 Add to Cart
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

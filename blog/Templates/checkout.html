@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(to right, #e0eafc, #cfdef3);
+  }
+
+  .checkout-card {
+    background: #fff;
+    padding: 40px 30px;
+    border-radius: 16px;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+    animation: fadeIn 0.6s ease-out;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .form-label {
+    font-weight: 600;
+    color: #333;
+  }
+
+  .form-control {
+    border-radius: 8px;
+    box-shadow: none;
+    transition: all 0.3s ease;
+  }
+
+  .form-control:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25);
+  }
+
+  .input-group-text {
+    background: #4a90e2;
+    color: white;
+    border-radius: 8px 0 0 8px;
+    border: none;
+  }
+
+  .btn-gradient {
+    background: linear-gradient(135deg, #00b09b, #96c93d);
+    color: #fff;
+    border: none;
+    padding: 12px 32px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-gradient:hover {
+    background: linear-gradient(135deg, #96c93d, #00b09b);
+    transform: scale(1.05);
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .amount-display {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 30px;
+  }
+
+  .amount-display .text-success {
+    font-weight: 800;
+  }
+
+</style>
+
+<div class="container py-5">
+  <div class="checkout-card">
+    <h2 class="text-center mb-4">
+      <i class="fas fa-file-invoice-dollar me-2 text-primary"></i>Checkout Information
+    </h2>
+
+    <form method="POST" action="{% url 'esewa_payment' %}">
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label for="full_name" class="form-label"><i class="fas fa-user me-2 text-secondary"></i>Full Name</label>
+        <input id="full_name" type="text" name="full_name" class="form-control" placeholder="Enter your full name" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="phone" class="form-label"><i class="fas fa-phone-alt me-2 text-secondary"></i>Phone Number</label>
+        <input id="phone" type="tel" name="phone" class="form-control" placeholder="980XXXXXXX" pattern="[0-9]{10,}" required>
+      </div>
+
+      <div class="mb-4">
+        <label for="address" class="form-label"><i class="fas fa-map-marker-alt me-2 text-secondary"></i>Delivery Address</label>
+        <textarea id="address" name="address" class="form-control" placeholder="Your street, city, and ward no." rows="3" required></textarea>
+      </div>
+
+      <div class="text-center amount-display">
+        Total Amount: <span class="text-success">Rs. {{ total }}</span>
+      </div>
+
+      <div class="text-center">
+        <button type="submit" class="btn btn-gradient">
+          <i class="fas fa-credit-card me-2"></i>Proceed to eSewa
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Make sure FontAwesome is included in your base.html -->
+{% endblock %}

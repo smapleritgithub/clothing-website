@@ -1,0 +1,90 @@
+{% extends 'layout.html' %}
+{% load bootstrap5 %}
+{% block content %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+<section class="py-5">
+  <div class="container">
+    <!-- Heading -->
+    <div class="text-center mb-5">
+      <h1 class="fw-bold display-5">
+        <i class="fas fa-tshirt me-2 text-primary"></i>Clothing Shopping System
+      </h1>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="row justify-content-center">
+      {% for product in page_obj %}
+        <div class="col-lg-4 col-md-6 mb-4 d-flex align-items-stretch">
+          <div class="card w-100 shadow-sm rounded-4">
+            {% if product.image %}
+              <img src="{{ product.image.url }}" class="card-img-top" alt="Image of {{ product.title }}">
+            {% endif %}
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title fw-semibold">
+                <i class="fas fa-tag me-2 text-secondary"></i>{{ product.title }}
+              </h5>
+              <p class="mb-1 text-muted small">
+                <i class="fas fa-layer-group me-1"></i>Category: {{ product.category }}
+              </p>
+              <p class="text-success mb-2 fw-medium">
+                <i class="fas fa-money-bill-wave me-1"></i>Rs. {{ product.price }}
+              </p>
+              <p class="text-truncate small">{{ product.getLimitText|safe }}</p>
+
+              <div class="mt-auto d-grid gap-2">
+                <a href="{% url 'register' %}" class="btn btn-outline-primary btn-sm rounded-pill">
+                  <i class="fas fa-eye me-1"></i> View Details
+                </a>
+                <a href="{% url 'register' %}" class="btn btn-gradient btn-sm rounded-pill">
+                  <i class="fas fa-cart-plus me-1"></i> Add to Cart
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <div class="col-12 text-center mt-5">
+          <p class="text-muted fs-5">
+            <i class="fas fa-box-open fa-2x mb-3 text-secondary"></i><br>
+            🚫 No products available right now.
+          </p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+      <nav class="mt-5">
+        <ul class="pagination justify-content-center">
+          {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.query %}&{{ request.GET.urlencode }}{% endif %}" aria-label="Previous">
+                &laquo; Previous
+              </a>
+            </li>
+          {% endif %}
+
+          {% for num in page_obj.paginator.page_range %}
+            {% if num == page_obj.number %}
+              <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+              <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+            {% endif %}
+          {% endfor %}
+
+          {% if page_obj.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.query %}&{{ request.GET.urlencode }}{% endif %}" aria-label="Next">
+                Next &raquo;
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container text-center py-5" style="max-width: 480px;">
+
+  <h2 class="mb-3">
+    <i class="fas fa-credit-card text-primary me-2"></i> Redirecting to eSewa...
+  </h2>
+
+  <p class="fs-5">
+    Total Amount to Pay: <strong>Rs. {{ total }}</strong>
+  </p>
+
+  <form id="esewaForm" action="https://esewa.com.np/#/home" method="GET" class="mt-4">
+    <input type="hidden" name="amount" value="{{ total }}">
+    <input type="hidden" name="tax_amount" value="0">
+    <input type="hidden" name="total_amount" value="{{ total }}">
+    <input type="hidden" name="transaction_uuid" value="ORDER{{ user.id }}{{ total|floatformat:0 }}">
+    <input type="hidden" name="product_code" value="EPAYTEST">
+    <input type="hidden" name="success_url" value="http://localhost:8000/payment/success/">
+    <input type="hidden" name="failure_url" value="http://localhost:8000/payment/failure/">
+    <input type="hidden" name="signed_field_names" value="total_amount,transaction_uuid,product_code">
+    <input type="hidden" name="signature" value="test-signature">
+
+    <button type="submit" class="btn btn-gradient px-5 py-2 fs-5">
+      <i class="fas fa-paper-plane me-2"></i> Pay Now
+    </button>
+  </form>
+
+  <div class="spinner-border text-success mt-4" role="status" aria-live="polite" aria-label="Loading">
+    <span class="visually-hidden">Redirecting...</span>
+  </div>
+
+  <p class="text-muted mt-3 fst-italic">
+    Please wait while you're redirected to eSewa.
+  </p>
+</div>
+
+<script>
+  // Automatically submit the form after 2 seconds
+  setTimeout(() => {
+    document.getElementById("esewaForm").submit();
+  }, 2000);
+</script>
+{% endblock %}

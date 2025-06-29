@@ -1,0 +1,2 @@
+<audio id="notification-sound" src="{% static 'audio/notification.mp3' %}" preload="auto"></audio>
+https://notificationsounds.com/notification-sounds/pristine-561

@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(to right, #e0eafc, #cfdef3);
+  }
+
+  .profile-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+  }
+
+  .profile-card:hover {
+    transform: scale(1.01);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+  }
+
+  h2 {
+    font-weight: 700;
+    color: #333;
+    letter-spacing: 1px;
+  }
+
+  h5 {
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #5a4fcf;
+  }
+
+  .form-control {
+    border-radius: 12px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .form-control:focus {
+    border-color: #4a00e0;
+    box-shadow: 0 0 0 0.2rem rgba(74, 0, 224, 0.25);
+  }
+
+  label {
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #444;
+  }
+
+  .btn-gradient {
+    background: linear-gradient(to right, #4a00e0, #8e2de2);
+    color: white;
+    border: none;
+    padding: 0.75rem 2.5rem;
+    font-weight: 600;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+  }
+
+  .btn-gradient:hover {
+    background: linear-gradient(to right, #8e2de2, #4a00e0);
+    transform: scale(1.05);
+  }
+
+  .preview-img {
+    max-width: 150px;
+    border-radius: 50%;
+    margin-top: 1rem;
+    border: 3px solid #8e2de2;
+    box-shadow: 0 0 10px rgba(142, 45, 226, 0.3);
+    transition: transform 0.3s ease;
+  }
+
+  .preview-img:hover {
+    transform: scale(1.05);
+  }
+
+  /* Style for error messages */
+  small.text-danger {
+    font-size: 0.85rem;
+  }
+</style>
+
+<div class="container mt-5">
+  <div class="profile-card">
+    <h2 class="text-center mb-4">
+      <i class="fas fa-user-edit text-primary me-2"></i> Edit Your Profile
+    </h2>
+
+    <form method="POST" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+      <div class="row g-4">
+        <div class="col-md-6">
+          <h5><i class="fas fa-id-badge me-2"></i> Account Info</h5>
+          {% for field in u_form %}
+            <div class="mb-3">
+              <label for="{{ field.id_for_label }}">
+                <i class="fas fa-info-circle text-secondary"></i> {{ field.label }}
+              </label>
+              {{ field }}
+              {% if field.errors %}
+                <small class="text-danger">{{ field.errors|striptags }}</small>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="col-md-6">
+          <h5><i class="fas fa-user-circle me-2"></i> Profile Info</h5>
+          {% for field in p_form %}
+            <div class="mb-3">
+              <label for="{{ field.id_for_label }}">
+                <i class="fas fa-info-circle text-secondary"></i> {{ field.label }}
+              </label>
+              {{ field }}
+              {% if field.errors %}
+                <small class="text-danger">{{ field.errors|striptags }}</small>
+              {% endif %}
+            </div>
+          {% endfor %}
+          <div class="text-center">
+            <img id="preview" src="{{ user.profile.profile_pic.url }}" alt="Current Profile Picture" class="preview-img" />
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mt-4">
+        <button type="submit" class="btn btn-gradient">
+          <i class="fas fa-save me-2"></i> Update Profile
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Live preview of profile picture
+  const fileInput = document.getElementById("id_profile_pic");
+  const previewImg = document.getElementById("preview");
+
+  if (fileInput) {
+    fileInput.addEventListener("change", function () {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          previewImg.setAttribute("src", e.target.result);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+</script>
+
+{% endblock %}
